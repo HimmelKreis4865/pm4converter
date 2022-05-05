@@ -139,7 +139,7 @@ const DANGEROUS_CODES = [
 	'/\$(e|ev|event)->setCancelled\(/' => 'Events are now cancelled with cancel() / uncancel() - Could not be replaced automatically'
 ];
 
-$pluginFolder = load_plugin_folder('example');
+$pluginFolder = load_plugin_folder($argv);
 $outputFolder = __DIR__ . DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR . basename($pluginFolder) . DIRECTORY_SEPARATOR;
 
 log_notice('Copying folder structure...');
@@ -244,9 +244,9 @@ function copy_folder_structure(string $src, string $target, bool $__do_not_chang
 	if ($__do_not_change and $failureCount) log_warning($failureCount . ' directories were unable to be generated, maybe already existent?');
 }
 
-function load_plugin_folder(?string $default = null): string {
-	if (!isset($argv[1]) and !$default) throw new RuntimeException('Please enter an argument to a path the plugin is inside.');
-	if (!is_dir($dir = ($argv[1] ?? $default)) and !is_dir($dir = __DIR__ . DIRECTORY_SEPARATOR . $dir)) throw new RuntimeException('Entered file path could not be found.');
+function load_plugin_folder(array $input): string {
+	if (!isset($input[1]) and !$input) throw new RuntimeException('Please enter an argument to a path the plugin is inside.');
+	if (!is_dir($dir = $input[1]) and !is_dir($dir = __DIR__ . DIRECTORY_SEPARATOR . $dir)) throw new RuntimeException('Entered file path could not be found.');
 	$dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	if (!file_exists($dir . 'plugin.yml')) throw new RuntimeException('A plugin must contain a valid plugin.yml');
 	if (!is_dir($dir . 'src')) throw new RuntimeException('A plugin must contain a src folder');
