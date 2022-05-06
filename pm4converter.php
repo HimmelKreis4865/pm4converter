@@ -10,7 +10,7 @@
  */
 
 $t = microtime(true) * 1000;
-set_exception_handler(function($exception): void {
+set_exception_handler(function ($exception): void {
 	log_error($exception->getMessage());
 	exit;
 });
@@ -39,9 +39,8 @@ const IMPORT_REMAPS = [
 	'pocketmine\level\Level' => 'pocketmine\world\World',
 	'pocketmine\level' => 'pocketmine\world',
 	'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
-	'pocketmine\event\level' => 'pocketmine\event\world'
+	'pocketmine\event\level' => 'pocketmine\event\world',
 ];
-
 const REMAPS = [
 	'/(public\sfunction\sonLoad\(\))\s*[:\s]*[^\{]*/i' => 'protected function onLoad(): void',
 	'/(public\sfunction\sonEnable\(\))\s*[:\s]*[^\{]*/i' => 'protected function onEnable(): void',
@@ -62,16 +61,22 @@ const REMAPS = [
 	'/(->getLevelNonNull\(\))/i' => '->getWorld()',
 	'/(->getLevel\(\))/i' => '->getWorld()',
 	'/(->sendDataPacket\()/i' => '->getNetworkSession()$1',
+	'/(->dataPacket\()/i' => '->getNetworkSession()->sendDataPacket(',
 	'/(->getFood\()/i' => '->getHungerManager()$1',
 	'/(->getMaxFood\()/i' => '->getHungerManager()$1',
 	'/(->removeAllEffects\()/i' => '->getEffects()->clear(',
+	'/(->getWorld()->getName\()/i' => '->getWorld()->getFolderName()',
 	'/(->addEffect\()/i' => '->getEffects()->add(',
+	'/(->addTitle\()/i' => '->sendTitle(',
+	'/(->addSubTitle\()/i' => '->sendSubTitle(',
+	'/(->setFood\()/i' => '->getHungerManager()$1',
 	'/(->removeEffect\()/i' => '->getEffects()->remove(',
 	'/(->getEffect\()/i' => '->getEffects()->get(',
 	'/(->hasEffect\()/i' => '->getEffects()->has(',
 	'/(->getEffects\()/i' => '->getEffects()->all(',
 	'/(->isHungry\()/i' => '->getHungerManager()$1',
 	'/(->getSaturation\()/i' => '->getHungerManager()$1',
+	'/(->asVector3\()/i' => '->getPosition()$1',
 	'/(->setSaturation\()/i' => '->getHungerManager()$1',
 	'/(->addSaturation\()/i' => '->getHungerManager()$1',
 	'/(->getExhaustion\()/i' => '->getHungerManager()$1',
@@ -108,7 +113,7 @@ const REMAPS = [
 	'/(public|protected|private)\s(.*)(Level)(.*)/' => '$1 $2World$4', // converts Level object type in properties to World
 	'/(function|fn.*\(.*)Level([^,]*\$.*\))/' => '$1World$2', // converts Level parameter type in functions to World
 	'/(function .*\)\s*:\s*)Level(.*)/' => '$1World$2', // converts Level return type to World
-	'/public function onRun\(int \$currentTick\)(.*)/i' => 'public function onRun()$1', // task behaviour changed
+	'/public function onRun\(int \$currentTick\)(\s*:[a-zA-Z0-9_\s]*)(.*)/i' => 'public function onRun(): void $2', // task behaviour changed
 	'/->setHandler\(\);/' => '->setHandler(null);', // handler argument doesn't have a default - null should work for every other thing that is not around this context
 	'/implements\sPluginIdentifiableCommand/' => 'implements PluginOwned',
 	'/(Block|\\\pocketmine\\\block\\\Block)::([A-Z]*)/' => '\pocketmine\block\BlockLegacyIds::$2',
@@ -120,25 +125,32 @@ const REMAPS = [
 	'/BaseLang/' => 'Language', // can we really convert this that easy?
 	'/([\({,\s\.])Generator::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
 	'/([\({,\s\.])GeneratorManager::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
+	'/DestroyBlockParticle/' => 'BlockBreakParticle'
 ];
-
 const DANGEROUS_CODES = [
-	'/getX\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-	'/getY\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-	'/getZ\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-	'/getFloorX\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-	'/getFloorY\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-	'/getFloorZ\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
 	'/getYaw\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
 	'/getPitch\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
 	'/getGamemode\(/' => 'Player GameMode was made a class instead of an int',
 	'/getWorldManager\(\)->generateWorld\(/' => 'Parameters of World generation changed to WorldGenerateOptions',
 	'/add\(([^,\)]*(?:,)?){1,2}\)/i' => 'Additions to vectors require 3 arguments', // they are not actively changed since
 	'/subtract\(([^,\)]*(?:,)?){1,2}\)/i' => 'Subtractions of vectors require 3 arguments',
-	'/PlayerInteractEvent::(RIGHT|LEFT)_CLICK_AIR/' => 'Air clicks have been removed from interaction types',
+	'/PlayerInteractEvent::(RIGHT|LEFT)_CLICK_AIR/' => 'Air clicks have been removed from interaction types.',
+	'/RemoteConsoleCommandSender/' => 'RemoteConsoleCommandSender was removed.',
+	'/EntityArmorChangeEvent/' => 'EntityArmorChangeEvent was removed.',
+	'/InventoryPickupArrowEvent/' => 'InventoryPickupArrowEvent was removed, use EntityItemPickupEvent instead.',
+	'/InventoryPickupItemEvent/' => 'InventoryPickupItemEvent was removed,use EntityItemPickupEvent instead.',
+	'/PlayerCheatEvent/' => 'PlayerIllegalMoveEvent was removed.',
+	'/PlayerIllegalMoveEvent/' => 'PlayerIllegalMoveEvent was removed.',
+	'/EntityLevelChangeEvent/' => 'EntityLevelChangeEvent was removed, use EntityTeleportEvent instead.',
+	'/CustomInventory/' => 'CustomInventory was removed in PM4',
+	'/InventoryEventProcessor/' => 'Class InventoryEventProcessor does no longer exist.',
+	'//(->getServer\(\)|Server::getInstance\(\))(->reload\()/i/' => 'Method \pocketmine\Server::reload() was removed.',
+	'/(->getServer\(\)|Server::getInstance\(\))(->addPlayer\()/i' => 'Method \pocketmine\Server::addPlayer() was removed.',
+	'/ItemFactory::fromString\(/' => 'ItemFactory::fromString() was removed.',
+	'/Potion::getPotionEffectsById\(/' => 'Potion::getPotionEffectsById() was removed.',
+	'/CreativeInventoryAction/' => 'CreativeInventoryAction was removed.',
 	'/\$(e|ev|event)->setCancelled\(/' => 'Events are now cancelled with cancel() / uncancel() - Could not be replaced automatically'
 ];
-
 $pluginFolder = load_plugin_folder($argv);
 $outputFolder = __DIR__ . DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR . basename($pluginFolder) . DIRECTORY_SEPARATOR;
 
@@ -153,11 +165,10 @@ log_notice('Repairing plugin.yml...');
 convert_plugin_file($pluginFolder . 'plugin.yml', $outputFolder . 'plugin.yml', $mainPath);
 
 log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 1000) - $t, 2) . 'ms.');
-
 function repair_files(string $pluginFolder, string $outputFolder): void {
 	$fileCount = count_files($pluginFolder);
 	
-	echo 'Repairing plugin files' . str_repeat(' ', strlen($fileCount)) .  '(0/' . $fileCount . ')';
+	echo 'Repairing plugin files' . str_repeat(' ', strlen($fileCount)) . '(0/' . $fileCount . ')';
 	$baseLen = 3 + strlen($fileCount);
 	$count = 0;
 	$warnings = [];
@@ -178,7 +189,6 @@ function repair_files(string $pluginFolder, string $outputFolder): void {
 	foreach ($warnings as $w) log_warning(' - ' . $w);
 }
 
-
 function repair_php_file(string $path, string $targetPath, string $relativePath, array &$warnings): void {
 	$content = file_get_contents($path);
 	foreach (IMPORT_REMAPS as $old => $new) {
@@ -193,7 +203,6 @@ function repair_php_file(string $path, string $targetPath, string $relativePath,
 			if (preg_match($m, $line)) $warnings[] = $relativePath . ':' . ($k + 1) . '  ' . $msg;
 		}
 	}
-	// todo: imports
 	file_put_contents($targetPath, $content);
 }
 
