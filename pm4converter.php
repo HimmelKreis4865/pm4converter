@@ -47,6 +47,7 @@ const IMPORT_REMAPS = [
     'pocketmine\level' => 'pocketmine\world',
     'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
     'pocketmine\event\level' => 'pocketmine\event\world'
+
 ];
 
 
@@ -88,6 +89,9 @@ const REMAPS = [
     '/(->getX\()/i' => '->getPosition()->asVector3()->getX()',
     '/(->getY\()/i' => '->getPosition()->asVector3()->getY()',
     '/(->getZ\()/i' => '->getPosition()->asVector3()->getZ()',
+    '/(->distance\()/i' => '->getPosition()->asVector3()$1',
+    '/(->floor\()/i' => '->getPosition()->asVector3()$1',
+  
     '/(->removeEffect\()/i' => '->getEffects()->remove(',
     '/(->getEffect\()/i' => '->getEffects()->get(',
     '/(->hasEffect\()/i' => '->getEffects()->has(',
@@ -115,6 +119,7 @@ const REMAPS = [
     '/(->canPickupXp\()/i' => '->getXpManager()$1',
     '/(->resetXpCooldown\()/i' => '->getXpManager()$1',
     '/(->getDataPropertyManager\()/i' => '->getNetworkProperties(',
+    '/(public function onRun(int $currentTick)()/i' => 'public function onRun():void',
     '/(Effect|\\\pocketmine\\\entity\\\Effect)(::getEffect\()/i' => '\\\pocketmine\\\data\\\bedrock\\\EffectIdMap::getInstance()->fromId(',
     '/\$effect->getId\(\)/i' => '\\\pocketmine\\\data\\\bedrock\\\EffectIdMap::getInstance()->toId($effect)',
     '/(Effect|\\\pocketmine\\\entity\\\Effect)(::registerEffect\()/i' => '\\\pocketmine\\\data\\\bedrock\\\EffectIdMap::getInstance()->register(',
