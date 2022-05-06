@@ -140,11 +140,11 @@ set_exception_handler(function ($exception) : void
 		'/PlayerInteractEvent::(RIGHT|LEFT)_CLICK_AIR/' => 'Air clicks have been removed from interaction types' ,
 		'/RemoteConsoleCommandSender/' => 'The class RemoteConsoleCommandSender was removed in PM4' ,
 		'/EntityArmorChangeEvent/' => 'The class EntityArmorChangeEvent was removed in PM4' ,
-		'/InventoryPickupArrowEvent/' => 'class was removed ,use EntityItemPickupEvent instead in PM4' ,
-		'/InventoryPickupItemEven/' => 'class was removed,use EntityItemPickupEvent instead  in PM4' ,
+		'/InventoryPickupArrowEvent/' => 'class was removed ,use InventoryPickupArrowEvent instead in PM4' ,
+		'/InventoryPickupItemEvent/' => 'class was removed,use InventoryPickupItemEvent instead  in PM4' ,
 		'/PlayerCheatEvent/' => 'class was removed in PM4' ,
 		'/PlayerIllegalMoveEvent/' => 'class was removed in PM4' ,
-		'/NetworkInterfaceCrashEvent/' => 'class was removed,use EntityTeleportEvent instead  in PM4' ,
+		'/NetworkInterfaceCrashEvent/' => 'class was removed,use NetworkInterfaceCrashEvent instead  in PM4' ,
 		'/EntityLevelChangeEvent/' => 'The class EntityLevelChangeEvent was removed in PM4' ,
 		'/CustomInventory/' => 'The class CustomInventory was removed in PM4' ,
 		'/InventoryEventProcessor/' => 'The class InventoryEventProcessor was removed in PM4' ,
@@ -155,7 +155,7 @@ set_exception_handler(function ($exception) : void
 		'/Recipe/' => 'The class Recipe was removed in PM4' ,
 		'/ItemFactory::fromString()/' => 'The function ItemFactory::fromString() was removed in PM4' ,
 		'/Potion::getPotionEffectsById()/' => 'The function Potion::getPotionEffectsById() was removed in PM4' ,
-		'/transaction\CreativeInventoryAction/' => 'The class EntityLevelChangeEvent was removed in PM4' ,
+		'/transaction\CreativeInventoryAction/' => 'The class CreativeInventoryAction was removed in PM4' ,
 		'/\$(e|ev|event)->setCancelled\(/' => 'Events are now cancelled with cancel() / uncancel() - Could not be replaced automatically'
 	];
 $pluginFolder = load_plugin_folder($argv);
