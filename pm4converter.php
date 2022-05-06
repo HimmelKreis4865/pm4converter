@@ -9,6 +9,7 @@
  */
 
 $t = microtime(true) * 100;
+
 set_exception_handler(function ($exception) : void
 {
 	log_error($exception->getMessage());
@@ -62,6 +63,7 @@ set_exception_handler(function ($exception) : void
 		'/(->getLevelNonNull\(\))/i' => '->getWorld()' ,
 		'/(->getLevel\(\))/i' => '->getWorld()' ,
 		'/(->sendDataPacket\()/i' => '->getNetworkSession()$1' ,
+		'/(->dataPacket\()/i' => '->getNetworkSession()$->sendDataPacket(' ,
 		'/(->getFood\()/i' => '->getHungerManager()$1' ,
 		'/(->getMaxFood\()/i' => '->getHungerManager()$1' ,
 		'/(->removeAllEffects\()/i' => '->getEffects()->clear(' ,
@@ -135,24 +137,24 @@ set_exception_handler(function ($exception) : void
 		'/add\(([^,\)]*(?:,)?){1,2}\)/i' => 'Additions to vectors require 3 arguments' , // they are not actively changed since
 		'/subtract\(([^,\)]*(?:,)?){1,2}\)/i' => 'Subtractions of vectors require 3 arguments' ,
 		'/PlayerInteractEvent::(RIGHT|LEFT)_CLICK_AIR/' => 'Air clicks have been removed from interaction types' ,
-		'/RemoteConsoleCommandSender' => 'class was removed' ,
-		'/EntityArmorChangeEvent' => 'class was removed ' ,
-		'/InventoryPickupArrowEvent' => 'class was removed ,use EntityItemPickupEvent instead' ,
-		'/InventoryPickupItemEvent' => 'class was removed,use EntityItemPickupEvent instead ' ,
-		'/PlayerCheatEvent' => 'class was removed' ,
-		'/PlayerIllegalMoveEvent' => 'class was removed' ,
-		'/NetworkInterfaceCrashEvent' => 'class was removed,use EntityTeleportEvent instead ' ,
-		'/EntityLevelChangeEvent' => 'class was removed' ,
-		'/CustomInventory' => 'class was removed' ,
-		'/InventoryEventProcessor' => 'class was removed' ,
-		'/->reload()' => 'class was removed' ,
-		'/->addPlayer' => 'class was removed' ,
-		'/->enablePlugin' => 'class was removed' ,
-		'/->disablePlugin()' => 'class was removed' ,
-		'/Recipe' => 'class was removed' ,
-		'/ItemFactory::fromString()' => 'class was removed' ,
-		'/Potion::getPotionEffectsById()' => 'class was removed' ,
-		'/transaction\CreativeInventoryAction' => 'class was removed' ,
+		'/RemoteConsoleCommandSender/' => 'The class RemoteConsoleCommandSender was removed in PM4' ,
+		'/EntityArmorChangeEvent/' => 'The class EntityArmorChangeEvent was removed in PM4' ,
+		'/InventoryPickupArrowEvent/' => 'class was removed ,use EntityItemPickupEvent instead in PM4' ,
+		'/InventoryPickupItemEven/' => 'class was removed,use EntityItemPickupEvent instead  in PM4' ,
+		'/PlayerCheatEvent/' => 'class was removed in PM4' ,
+		'/PlayerIllegalMoveEvent/' => 'class was removed in PM4' ,
+		'/NetworkInterfaceCrashEvent/' => 'class was removed,use EntityTeleportEvent instead  in PM4' ,
+		'/EntityLevelChangeEvent/' => 'The class EntityLevelChangeEvent was removed in PM4' ,
+		'/CustomInventory/' => 'The class CustomInventory was removed in PM4' ,
+		'/InventoryEventProcessor/' => 'The class InventoryEventProcessor was removed in PM4' ,
+		'/->reload()/' => 'The function reload was removed in PM4' ,
+		'/->addPlayer/' => 'The function ->addPlayer was removed in PM4' ,
+		'/->enablePlugin/' => 'The function ->enablePlugin was removed in PM4' ,
+		'/->disablePlugin()/' => 'The function ->disablePlugin() was removed in PM4' ,
+		'/Recipe/' => 'The class Recipe was removed in PM4' ,
+		'/ItemFactory::fromString()/' => 'The function ItemFactory::fromString() was removed in PM4' ,
+		'/Potion::getPotionEffectsById()/' => 'The function Potion::getPotionEffectsById() was removed in PM4' ,
+		'/transaction\CreativeInventoryAction/' => 'The class EntityLevelChangeEvent was removed in PM4' ,
 		'/\$(e|ev|event)->setCancelled\(/' => 'Events are now cancelled with cancel() / uncancel() - Could not be replaced automatically'
 	];
 $pluginFolder = load_plugin_folder($argv);
@@ -288,4 +290,4 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 	{
 		echo "\033[91m" . $str . "\033[39m" . PHP_EOL;
 	}
-
+	
