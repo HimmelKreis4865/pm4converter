@@ -302,3 +302,4 @@ function log_warning(string $str): void
 function log_error(string $str): void
 {
     echo "\033[91m" . $str . "\033[39m" . PHP_EOL;
+}
