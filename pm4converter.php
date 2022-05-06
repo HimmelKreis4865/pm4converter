@@ -14,7 +14,8 @@ set_exception_handler(function ($exception): void {
     log_error($exception->getMessage());
     exit;
 
-});                                                                                                                                                                                         
+});
+
 const IMPORT_REMAPS = [
     'pocketmine\Player' => 'pocketmine\player\Player',
     'pocketmine\OfflinePlayer' => 'pocketmine\player\OfflinePlayer',
@@ -39,7 +40,7 @@ const IMPORT_REMAPS = [
     'pocketmine\level\Level' => 'pocketmine\world\World',
     'pocketmine\level' => 'pocketmine\world',
     'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
-    'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\BlockBreakParticle',
+    'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\Particle\BlockBreakParticle',
     'pocketmine\event\level' => 'pocketmine\event\world',
 
 
@@ -57,7 +58,6 @@ const REMAPS = [
     '/(->getServer\(\)|Server::getInstance\(\))(->setAutoSave\()/i' => '$1->getWorldManager()$2',
     '/(->getServer\(\)|Server::getInstance\(\))(->getDefaultLevel\()/i' => '$1->getWorldManager()->getDefaultWorld(',
     '/(->getServer\(\)|Server::getInstance\(\))(->getLevel\()/i' => '$1->getWorldManager()->getWorld(',
-    '/ContainerInventory' => 'BlockInventory',
     '/(->getServer\(\)|Server::getInstance\(\))(->getLevelByName\()/i' => '$1->getWorldManager()->getWorldByName(',
     '/(->getServer\(\)|Server::getInstance\(\))(->getLevels\()/i' => '$1->getWorldManager()->getWorlds(',
     '/(->getServer\(\)|Server::getInstance\(\))(->isLevelGenerated\()/i' => '$1->getWorldManager()->isWorldGenerated(',
@@ -73,49 +73,10 @@ const REMAPS = [
     '/(->removeAllEffects\()/i' => '->getEffects()->clear(',
     '/(->getWorld()->getName\()/i' => '->getWorld()->getFolderName()',
     '/(->addEffect\()/i' => '->getEffects()->add(',
-    '/(->setGamemode\(1)/i' => '->setGamemode(GameMode::CREATIVE())',
-    '/(->setGamemode\(0)/i' => '->setGamemode(GameMode::SURVIVAL())',
-    '/(->setGamemode\(3)/i' => '->setGamemode(GameMode::SPECTATOR())',
-    '/(->setGamemode\(2)/i' => '->setGamemode(GameMode::ADVENTURE())',
-    '/(new  ConsoleCommandSender\()/i' => 'new ConsoleCommandSender(Server::getInstance(),new Language("eng"))',
     '/(->addTitle\()/i' => '->sendTitle(',
     '/(->broadcast\()/i' => '->broadcastMessage(',
     '/(->addSubTitle\()/i' => '->sendSubTitle(',
     '/(->setFood\()/i' => '->getHungerManager()$1',
-    '/(->getX\()/i' => '->getPosition()->getX()',
-    '/(->getY\()/i' => '->getPosition()->getY()',
-    '/(->getZ\()/i' => '->getPosition()->getZ()',
-    '/(->getFloorX\()/i' => '->getPosition()$1',
-    '/(->getFloorY\()/i' => '->getPosition()$1',
-    '/(->getFloorZ\()/i' => '->getPosition()$1',
-    '/(->distance\()/i' => '->getPosition()$1',
-    '/(->floor\()/i' => '->getPosition()$1',
-    '/(->subtract\()/i' => '->getPosition()$1',
-    '/(->up\()/i' => '->getPosition()$1',
-    '/(->down\()/i' => '->getPosition()$1',
-    '/(->abs\()/i' => '->getPosition()$1',
-    '/(->east\()/i' => '->getPosition()$1',
-    '/(->north\()/i' => '->getPosition()$1',
-    '/(->south\()/i' => '->getPosition()$1',
-    '/(->west\()/i' => '->getPosition()$1',
-    '/(->ceil\()/i' => '->getPosition()$1',
-    '/(->cross\()/i' => '->getPosition()$1',
-    '/(->getSide\()/i' => '->getPosition()$1',
-    '/(->divide\()/i' => '->getPosition()$1',
-    '/(->dot\()/i' => '->getPosition()$1',
-    '/(->round\()/i' => '->getPosition()$1',
-    '/(->length\()/i' => '->getPosition()$1',
-    '/(->x\()/i' => '->getPosition()$1',
-    '/(->y\()/i' => '->getPosition()$1',
-    '/(->z\()/i' => '->getPosition()$1',
-    '/(->add\()/i' => '->getPosition()$1',
-    '/(->multiply\()/i' => '->getPosition()$1',
-    '/(->maxPlainDistance\()/i' => '->getPosition()$1',
-    '/(->distanceSquared\()/i' => '->getPosition()$1',
-    '/(->getIntermediateWithXValue\()/i' => '->getPosition()$1',
-    '/(->getIntermediateWithYValue\()/i' => '->getPosition()$1',
-    '/(->getIntermediateWithZValue\()/i' => '->getPosition()$1',
-    '/(->lengthSquared\()/i' => '->getPosition()$1',
     '/(DestroyBlockParticle\/i' => 'BlockBreakParticle',
     '/(->removeEffect\()/i' => '->getEffects()->remove(',
     '/(->getEffect\()/i' => '->getEffects()->get(',
@@ -341,4 +302,3 @@ function log_warning(string $str): void
 function log_error(string $str): void
 {
     echo "\033[91m" . $str . "\033[39m" . PHP_EOL;
-}
