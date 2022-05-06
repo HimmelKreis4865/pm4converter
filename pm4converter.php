@@ -8,7 +8,7 @@
  * 2022 - HimmelKreis4865
  */
 $t = microtime(true) * 100;
-set_exception_handler(function ($exception): void {
+set_exception_handler(function ($exception): void{
     log_error($exception->getMessage());
     exit;
 
