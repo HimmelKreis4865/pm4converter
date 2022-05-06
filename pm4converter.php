@@ -9,7 +9,8 @@
  */
 
 $t = microtime(true) * 100;
-set_exception_handler(function ($exception) : void{
+set_exception_handler(function ($exception) : void
+{
 	log_error($exception->getMessage());
 	exit;
 	
@@ -193,7 +194,8 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 		foreach ( $warnings as $w ) log_warning(' - ' . $w);
 	}
 	
-	function repair_php_file (string $path , string $targetPath , string $relativePath , array &$warnings) : void{
+	function repair_php_file (string $path , string $targetPath , string $relativePath , array &$warnings) : void
+	{
 		$content = file_get_contents($path);
 		foreach ( IMPORT_REMAPS as $old => $new ) {
 			$content = str_replace('\\' . $old , $new , $content);
@@ -220,7 +222,8 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 		return $count;
 	}
 	
-	function scan_directory_recursively (string $path , Closure $closure) : void{
+	function scan_directory_recursively (string $path , Closure $closure) : void
+	{
 		$path = rtrim($path , DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		foreach ( array_diff(scandir($path) , ['.' , '..']) as $file ) {
 			$closure($path . $file);
@@ -228,7 +231,8 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 		}
 	}
 	
-	function convert_plugin_file (string $path , string $outputPath , &$mainPath) : void{
+	function convert_plugin_file (string $path , string $outputPath , &$mainPath) : void
+	{
 		$yaml = yaml_parse_file($path);
 		$yaml[ 'api' ] = '4.0.0';
 		$p = [];
@@ -249,7 +253,8 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 		$mainPath = dirname($path) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $yaml[ 'main' ] . '.php';
 	}
 	
-	function copy_folder_structure (string $src , string $target , bool $__do_not_change = true , &$failureCount = 0) : void{
+	function copy_folder_structure (string $src , string $target , bool $__do_not_change = true , &$failureCount = 0) : void
+	{
 		foreach ( array_diff(scandir($src) , ['.' , '..']) as $file ) {
 			if ( is_dir($src . $file) ) {
 				if ( ! @mkdir($target . $file , 0777 , true) ) ++$failureCount;
@@ -259,7 +264,8 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 		if ( $__do_not_change and $failureCount ) log_warning($failureCount . ' directories were unable to be generated, maybe already existent?');
 	}
 	
-	function load_plugin_folder (array $input) : string{
+	function load_plugin_folder (array $input) : string
+	{
 		if ( ! isset($input[ 1 ]) and ! $input ) throw new RuntimeException('Please enter an argument to a path the plugin is inside.');
 		if ( ! is_dir($dir = $input[ 1 ]) and ! is_dir($dir = __DIR__ . DIRECTORY_SEPARATOR . $dir) ) throw new RuntimeException('Entered file path could not be found.');
 		$dir = rtrim($dir , DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -268,14 +274,18 @@ log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 100
 		return $dir;
 	}
 	
-	function log_notice (string $str) : void{
+	function log_notice (string $str) : void
+	{
 		echo "\033[92m" . $str . "\033[39m" . PHP_EOL;
 	}
-	function log_warning (string $str) : void{
+	
+	function log_warning (string $str) : void
+	{
 		echo "\033[93m" . $str . "\033[39m" . PHP_EOL;
 	}
 	
-	function log_error (string $str) : void{
+	function log_error (string $str) : void
+	{
 		echo "\033[91m" . $str . "\033[39m" . PHP_EOL;
 	}
-	
+
