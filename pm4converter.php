@@ -1,6 +1,7 @@
 <?php
 
 
+
 /**
  * This script converts PocketMine-MP plugins with API3.x.x to API4.x.x
  * There are possible bugs, converting a plugin requires full testing after
@@ -8,9 +9,8 @@
  * Please report any bugs you encounter while converting / testing (that are obviously caused by this script)
  *
  * 2022 - HimmelKreis4865
- *
- *
  */
+
 
 
 $t = microtime(true) * 1000;
@@ -21,6 +21,9 @@ set_exception_handler(function ($exception): void {
 
 
 });
+
+
+
 
 const IMPORT_REMAPS = [
     'pocketmine\Player' => 'pocketmine\player\Player',
@@ -85,13 +88,42 @@ const REMAPS = [
 
     '/(new  ConsoleCommandSender\()/i' => 'new ConsoleCommandSender(Server::getInstance(),new Language("eng"))',
     '/(->addTitle\()/i' => '->sendTitle(',
+
     '/(->setFood\()/i' => '->getHungerManager()$1',
     '/(->getX\()/i' => '->getPosition()->asVector3()->getX()',
     '/(->getY\()/i' => '->getPosition()->asVector3()->getY()',
     '/(->getZ\()/i' => '->getPosition()->asVector3()->getZ()',
+    '/(->getFloorX\()/i' => '->getPosition()->asVector3()->getFloorX()',
+    '/(->getFloorY\()/i' => '->getPosition()->asVector3()->getFloorY()',
+    '/(->getFloorZ\()/i' => '->getPosition()->asVector3()->getFloorZ()',
     '/(->distance\()/i' => '->getPosition()->asVector3()$1',
     '/(->floor\()/i' => '->getPosition()->asVector3()$1',
-  
+    '/(->subtract\()/i' => '->getPosition()->asVector3()$1',
+    '/(->up\()/i' => '->getPosition()->asVector3()$1',
+    '/(->down\()/i' => '->getPosition()->asVector3()$1',
+    '/(->abs\()/i' => '->getPosition()->asVector3()$1',
+    '/(->east\()/i' => '->getPosition()->asVector3()$1',
+    '/(->north\()/i' => '->getPosition()->asVector3()$1',
+    '/(->south\()/i' => '->getPosition()->asVector3()$1',
+    '/(->west\()/i' => '->getPosition()->asVector3()$1',
+    '/(->ceil\()/i' => '->getPosition()->asVector3()$1',
+    '/(->cross\()/i' => '->getPosition()->asVector3()$1',
+    '/(->getSide\()/i' => '->getPosition()->asVector3()$1',
+    '/(->divide\()/i' => '->getPosition()->asVector3()$1',
+    '/(->dot\()/i' => '->getPosition()->asVector3()$1',
+    '/(->round\()/i' => '->getPosition()->asVector3()$1',
+    '/(->length\()/i' => '->getPosition()->asVector3()$1',
+    '/(->x\()/i' => '->getPosition()->asVector3()$1',
+    '/(->y\()/i' => '->getPosition()->asVector3()$1',
+    '/(->z\()/i' => '->getPosition()->asVector3()$1',
+    '/(->add\()/i' => '->getPosition()->asVector3()$1',
+    '/(->multiply\()/i' => '->getPosition()->asVector3()$1',
+    '/(->maxPlainDistance\()/i' => '->getPosition()->asVector3()$1',
+    '/(->distanceSquared\()/i' => '->getPosition()->asVector3()$1',
+    '/(->getIntermediateWithXValue\()/i' => '->getPosition()->asVector3()$1',
+    '/(->getIntermediateWithYValue\()/i' => '->getPosition()->asVector3()$1',
+    '/(->getIntermediateWithZValue\()/i' => '->getPosition()->asVector3()$1',
+    '/(->lengthSquared\()/i' => '->getPosition()->asVector3()$1',
     '/(->removeEffect\()/i' => '->getEffects()->remove(',
     '/(->getEffect\()/i' => '->getEffects()->get(',
     '/(->hasEffect\()/i' => '->getEffects()->has(',
@@ -119,7 +151,6 @@ const REMAPS = [
     '/(->canPickupXp\()/i' => '->getXpManager()$1',
     '/(->resetXpCooldown\()/i' => '->getXpManager()$1',
     '/(->getDataPropertyManager\()/i' => '->getNetworkProperties(',
-    '/(public function onRun(int $currentTick)()/i' => 'public function onRun():void',
     '/(Effect|\\\pocketmine\\\entity\\\Effect)(::getEffect\()/i' => '\\\pocketmine\\\data\\\bedrock\\\EffectIdMap::getInstance()->fromId(',
     '/\$effect->getId\(\)/i' => '\\\pocketmine\\\data\\\bedrock\\\EffectIdMap::getInstance()->toId($effect)',
     '/(Effect|\\\pocketmine\\\entity\\\Effect)(::registerEffect\()/i' => '\\\pocketmine\\\data\\\bedrock\\\EffectIdMap::getInstance()->register(',
@@ -136,7 +167,7 @@ const REMAPS = [
     '/(public|protected|private)\s(.*)(Level)(.*)/' => '$1 $2World$4', // converts Level object type in properties to World
     '/(function|fn.*\(.*)Level([^,]*\$.*\))/' => '$1World$2', // converts Level parameter type in functions to World
     '/(function .*\)\s*:\s*)Level(.*)/' => '$1World$2', // converts Level return type to World
-    '/public function onRun\(int \$currentTick\)(.*)/i' => 'public function onRun()$1', // task behaviour changed
+    '/public function onRun\(int \$currentTick\)(.*)/i' => 'public function onRun():void$1', // task behaviour changed
     '/->setHandler\(\);/' => '->setHandler(null);', // handler argument doesn't have a default - null should work for every other thing that is not around this context
     '/implements\sPluginIdentifiableCommand/' => 'implements PluginOwned',
     '/(Block|\\\pocketmine\\\block\\\Block)::([A-Z]*)/' => '\pocketmine\block\BlockLegacyIds::$2',
@@ -151,9 +182,7 @@ const REMAPS = [
 ];
 
 const DANGEROUS_CODES = [
-    '/getX\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-    '/getY\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-    '/getZ\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
+
     '/getFloorX\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
     '/getFloorY\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
     '/getFloorZ\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
