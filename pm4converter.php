@@ -113,6 +113,7 @@ set_exception_handler(function ($exception) : void
 		'/(Vector3::SIDE_)(NORTH|SOUTH|EAST|WEST)/i' => '\pocketmine\math\Facing::$2' ,
 		'/->getWorldHeight\(\)/i' => '->getMaxY()' ,
 		'/BlockIds/' => 'BlockLegacyIds' ,
+		'/Level/' => 'World' ,
 		'/(public|protected|private)\s(.*)(Level)(.*)/' => '$1 $2World$4' , // converts Level object type in properties to World
 		'/(function|fn.*\(.*)Level([^,]*\$.*\))/' => '$1World$2' , // converts Level parameter type in functions to World
 		'/(function .*\)\s*:\s*)Level(.*)/' => '$1World$2' , // converts Level return type to World
