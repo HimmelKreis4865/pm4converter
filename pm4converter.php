@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This script converts PocketMine-MP plugins with API3.x.x to API4.x.x
  * There are possible bugs, converting a plugin requires full testing after
@@ -8,14 +7,12 @@
  *
  * 2022 - HimmelKreis4865
  */
-
 $t = microtime(true) * 100;
 set_exception_handler(function ($exception): void {
     log_error($exception->getMessage());
     exit;
 
 });
-
 const IMPORT_REMAPS = [
     'pocketmine\Player' => 'pocketmine\player\Player',
     'pocketmine\OfflinePlayer' => 'pocketmine\player\OfflinePlayer',
@@ -42,13 +39,7 @@ const IMPORT_REMAPS = [
     'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
     'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\Particle\BlockBreakParticle',
     'pocketmine\event\level' => 'pocketmine\event\world',
-
-
-
-];
-
-
-const REMAPS = [
+];const REMAPS = [
     '/(public\sfunction\sonLoad\(\))\s*[:\s]*[^\{]*/i' => 'protected function onLoad(): void',
     '/(public\sfunction\sonEnable\(\))\s*[:\s]*[^\{]*/i' => 'protected function onEnable(): void',
     '/(public\sfunction\sonDisable\(\))\s*[:\s]*[^\{]*/i' => 'protected function onDisable(): void',
@@ -77,7 +68,6 @@ const REMAPS = [
     '/(->broadcast\()/i' => '->broadcastMessage(',
     '/(->addSubTitle\()/i' => '->sendSubTitle(',
     '/(->setFood\()/i' => '->getHungerManager()$1',
-    '/(DestroyBlockParticle\/i' => 'BlockBreakParticle',
     '/(->removeEffect\()/i' => '->getEffects()->remove(',
     '/(->getEffect\()/i' => '->getEffects()->get(',
     '/(->hasEffect\()/i' => '->getEffects()->has(',
@@ -134,10 +124,7 @@ const REMAPS = [
     '/([\({,\s\.])Generator::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
     '/([\({,\s\.])GeneratorManager::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
 ];
-
 const DANGEROUS_CODES = [
-
-
     '/getYaw\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
     '/getPitch\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
     '/getGamemode\(/' => 'Player GameMode was made a class instead of an int',
@@ -164,10 +151,7 @@ const DANGEROUS_CODES = [
     '/Potion::getPotionEffectsById()' => 'class was removed',
     '/transaction\CreativeInventoryAction' => 'class was removed',
     '/\$(e|ev|event)->setCancelled\(/' => 'Events are now cancelled with cancel() / uncancel() - Could not be replaced automatically'
-
-
 ];
-
 $pluginFolder = load_plugin_folder($argv);
 $outputFolder = __DIR__ . DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR . basename($pluginFolder) . DIRECTORY_SEPARATOR;
 
@@ -182,9 +166,7 @@ log_notice('Repairing plugin.yml...');
 convert_plugin_file($pluginFolder . 'plugin.yml', $outputFolder . 'plugin.yml', $mainPath);
 
 log_notice('Completed plugin convert to API4 in ' . round((microtime(true) * 1000) - $t, 2) . 'ms.');
-
-function repair_files(string $pluginFolder, string $outputFolder): void
-{
+function repair_files(string $pluginFolder, string $outputFolder): void{
     $fileCount = count_files($pluginFolder);
 
     echo 'Repairing plugin files' . str_repeat(' ', strlen($fileCount)) . '(0/' . $fileCount . ')';
@@ -207,10 +189,7 @@ function repair_files(string $pluginFolder, string $outputFolder): void
     log_warning('Found ' . count($warnings) . ' possible remaining bugs that cannot be fixed with this converter (they might be invalid):');
     foreach ($warnings as $w) log_warning(' - ' . $w);
 }
-
-
-function repair_php_file(string $path, string $targetPath, string $relativePath, array &$warnings): void
-{
+function repair_php_file(string $path, string $targetPath, string $relativePath, array &$warnings): void{
     $content = file_get_contents($path);
     foreach (IMPORT_REMAPS as $old => $new) {
         $content = str_replace('\\' . $old, $new, $content);
@@ -227,27 +206,21 @@ function repair_php_file(string $path, string $targetPath, string $relativePath,
     // todo: imports
     file_put_contents($targetPath, $content);
 }
-
-function count_files(string $directory): int
-{
+function count_files(string $directory): int{
     $count = 0;
     scan_directory_recursively($directory, function (string $path) use (&$count) {
         if (!is_dir($path)) $count++;
     });
     return $count;
 }
-
-function scan_directory_recursively(string $path, Closure $closure): void
-{
+function scan_directory_recursively(string $path, Closure $closure): void{
     $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     foreach (array_diff(scandir($path), ['.', '..']) as $file) {
         $closure($path . $file);
         if (is_dir($path . $file)) scan_directory_recursively($path . $file, $closure);
     }
 }
-
-function convert_plugin_file(string $path, string $outputPath, &$mainPath): void
-{
+function convert_plugin_file(string $path, string $outputPath, &$mainPath): void{
     $yaml = yaml_parse_file($path);
     $yaml['api'] = '4.0.0';
     $p = [];
@@ -267,9 +240,7 @@ function convert_plugin_file(string $path, string $outputPath, &$mainPath): void
     yaml_emit_file($outputPath, $yaml);
     $mainPath = dirname($path) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $yaml['main'] . '.php';
 }
-
-function copy_folder_structure(string $src, string $target, bool $__do_not_change = true, &$failureCount = 0): void
-{
+function copy_folder_structure(string $src, string $target, bool $__do_not_change = true, &$failureCount = 0): void{
     foreach (array_diff(scandir($src), ['.', '..']) as $file) {
         if (is_dir($src . $file)) {
             if (!@mkdir($target . $file, 0777, true)) ++$failureCount;
@@ -278,9 +249,7 @@ function copy_folder_structure(string $src, string $target, bool $__do_not_chang
     }
     if ($__do_not_change and $failureCount) log_warning($failureCount . ' directories were unable to be generated, maybe already existent?');
 }
-
-function load_plugin_folder(array $input): string
-{
+function load_plugin_folder(array $input): string{
     if (!isset($input[1]) and !$input) throw new RuntimeException('Please enter an argument to a path the plugin is inside.');
     if (!is_dir($dir = $input[1]) and !is_dir($dir = __DIR__ . DIRECTORY_SEPARATOR . $dir)) throw new RuntimeException('Entered file path could not be found.');
     $dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -288,18 +257,12 @@ function load_plugin_folder(array $input): string
     if (!is_dir($dir . 'src')) throw new RuntimeException('A plugin must contain a src folder');
     return $dir;
 }
-
-function log_notice(string $str): void
-{
+function log_notice(string $str): void{
     echo "\033[92m" . $str . "\033[39m" . PHP_EOL;
 }
-
-function log_warning(string $str): void
-{
+function log_warning(string $str): void{
     echo "\033[93m" . $str . "\033[39m" . PHP_EOL;
 }
-
-function log_error(string $str): void
-{
+function log_error(string $str): void{
     echo "\033[91m" . $str . "\033[39m" . PHP_EOL;
 }
