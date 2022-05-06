@@ -10,11 +10,11 @@
  */
 
 $t = microtime(true) * 1000;
-
 set_exception_handler(function ($exception): void {
 	log_error($exception->getMessage());
 	exit;
 });
+
 const IMPORT_REMAPS = [
 	'pocketmine\Player' => 'pocketmine\player\Player',
 	'pocketmine\OfflinePlayer' => 'pocketmine\player\OfflinePlayer',
@@ -39,7 +39,6 @@ const IMPORT_REMAPS = [
 	'pocketmine\level\Level' => 'pocketmine\world\World',
 	'pocketmine\level' => 'pocketmine\world',
 	'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
-	'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\Particle\BlockBreakParticle',
 	'pocketmine\event\level' => 'pocketmine\event\world',
 ];
 const REMAPS = [
@@ -111,11 +110,10 @@ const REMAPS = [
 	'/(Vector3::SIDE_)(NORTH|SOUTH|EAST|WEST)/i' => '\pocketmine\math\Facing::$2',
 	'/->getWorldHeight\(\)/i' => '->getMaxY()',
 	'/BlockIds/' => 'BlockLegacyIds',
-	'/Level/' => 'World',
 	'/(public|protected|private)\s(.*)(Level)(.*)/' => '$1 $2World$4', // converts Level object type in properties to World
 	'/(function|fn.*\(.*)Level([^,]*\$.*\))/' => '$1World$2', // converts Level parameter type in functions to World
 	'/(function .*\)\s*:\s*)Level(.*)/' => '$1World$2', // converts Level return type to World
-	'/public function onRun\(int \$currentTick\)(.*)/i' => 'public function onRun():void$1', // task behaviour changed
+	'/public function onRun\(int \$currentTick\)(\s*:[a-zA-Z0-9_\s]*)(.*)/i' => 'public function onRun(): void $2', // task behaviour changed
 	'/->setHandler\(\);/' => '->setHandler(null);', // handler argument doesn't have a default - null should work for every other thing that is not around this context
 	'/implements\sPluginIdentifiableCommand/' => 'implements PluginOwned',
 	'/(Block|\\\pocketmine\\\block\\\Block)::([A-Z]*)/' => '\pocketmine\block\BlockLegacyIds::$2',
@@ -127,6 +125,7 @@ const REMAPS = [
 	'/BaseLang/' => 'Language', // can we really convert this that easy?
 	'/([\({,\s\.])Generator::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
 	'/([\({,\s\.])GeneratorManager::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
+	'/DestroyBlockParticle/' => 'BlockBreakParticle'
 ];
 const DANGEROUS_CODES = [
 	'/getYaw\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
