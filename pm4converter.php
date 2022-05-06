@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * This script converts PocketMine-MP plugins with API3.x.x to API4.x.x
  * There are possible bugs, converting a plugin requires full testing after
@@ -11,20 +9,12 @@
  * 2022 - HimmelKreis4865
  */
 
-
-
-$t = microtime(true) * 1000;
+$t = microtime(true) * 100;
 set_exception_handler(function ($exception): void {
     log_error($exception->getMessage());
     exit;
 
-
-
-});
-
-
-
-
+});                                                                                                                                                                                         
 const IMPORT_REMAPS = [
     'pocketmine\Player' => 'pocketmine\player\Player',
     'pocketmine\OfflinePlayer' => 'pocketmine\player\OfflinePlayer',
@@ -49,7 +39,10 @@ const IMPORT_REMAPS = [
     'pocketmine\level\Level' => 'pocketmine\world\World',
     'pocketmine\level' => 'pocketmine\world',
     'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
-    'pocketmine\event\level' => 'pocketmine\event\world'
+    'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\Particle\BlockBreakParticle',
+    'pocketmine\event\level' => 'pocketmine\event\world',
+
+
 
 ];
 
@@ -64,13 +57,13 @@ const REMAPS = [
     '/(->getServer\(\)|Server::getInstance\(\))(->setAutoSave\()/i' => '$1->getWorldManager()$2',
     '/(->getServer\(\)|Server::getInstance\(\))(->getDefaultLevel\()/i' => '$1->getWorldManager()->getDefaultWorld(',
     '/(->getServer\(\)|Server::getInstance\(\))(->getLevel\()/i' => '$1->getWorldManager()->getWorld(',
+    '/ContainerInventory' => 'BlockInventory',
     '/(->getServer\(\)|Server::getInstance\(\))(->getLevelByName\()/i' => '$1->getWorldManager()->getWorldByName(',
     '/(->getServer\(\)|Server::getInstance\(\))(->getLevels\()/i' => '$1->getWorldManager()->getWorlds(',
     '/(->getServer\(\)|Server::getInstance\(\))(->isLevelGenerated\()/i' => '$1->getWorldManager()->isWorldGenerated(',
     '/(->getServer\(\)|Server::getInstance\(\))(->isLevelLoaded\()/i' => '$1->getWorldManager()->isWorldLoaded(',
     '/(->getServer\(\)|Server::getInstance\(\))(->loadLevel\()/i' => '$1->getWorldManager()->loadWorld(',
     '/(->getServer\(\)|Server::getInstance\(\))(->unloadLevel\()/i' => '$1->getWorldManager()->unloadWorld(',
-
     '/(->getServer\(\)|Server::getInstance\(\))(->setDefaultLevel\()/i' => '$1->getWorldManager()->setDefaultWorld(',
     '/(->getLevelNonNull\(\))/i' => '->getWorld()',
     '/(->getLevel\(\))/i' => '->getWorld()',
@@ -78,52 +71,52 @@ const REMAPS = [
     '/(->getFood\()/i' => '->getHungerManager()$1',
     '/(->getMaxFood\()/i' => '->getHungerManager()$1',
     '/(->removeAllEffects\()/i' => '->getEffects()->clear(',
-
     '/(->getWorld()->getName\()/i' => '->getWorld()->getFolderName()',
     '/(->addEffect\()/i' => '->getEffects()->add(',
     '/(->setGamemode\(1)/i' => '->setGamemode(GameMode::CREATIVE())',
     '/(->setGamemode\(0)/i' => '->setGamemode(GameMode::SURVIVAL())',
     '/(->setGamemode\(3)/i' => '->setGamemode(GameMode::SPECTATOR())',
     '/(->setGamemode\(2)/i' => '->setGamemode(GameMode::ADVENTURE())',
-
     '/(new  ConsoleCommandSender\()/i' => 'new ConsoleCommandSender(Server::getInstance(),new Language("eng"))',
     '/(->addTitle\()/i' => '->sendTitle(',
-
+    '/(->broadcast\()/i' => '->broadcastMessage(',
+    '/(->addSubTitle\()/i' => '->sendSubTitle(',
     '/(->setFood\()/i' => '->getHungerManager()$1',
-    '/(->getX\()/i' => '->getPosition()->asVector3()->getX()',
-    '/(->getY\()/i' => '->getPosition()->asVector3()->getY()',
-    '/(->getZ\()/i' => '->getPosition()->asVector3()->getZ()',
-    '/(->getFloorX\()/i' => '->getPosition()->asVector3()->getFloorX()',
-    '/(->getFloorY\()/i' => '->getPosition()->asVector3()->getFloorY()',
-    '/(->getFloorZ\()/i' => '->getPosition()->asVector3()->getFloorZ()',
-    '/(->distance\()/i' => '->getPosition()->asVector3()$1',
-    '/(->floor\()/i' => '->getPosition()->asVector3()$1',
-    '/(->subtract\()/i' => '->getPosition()->asVector3()$1',
-    '/(->up\()/i' => '->getPosition()->asVector3()$1',
-    '/(->down\()/i' => '->getPosition()->asVector3()$1',
-    '/(->abs\()/i' => '->getPosition()->asVector3()$1',
-    '/(->east\()/i' => '->getPosition()->asVector3()$1',
-    '/(->north\()/i' => '->getPosition()->asVector3()$1',
-    '/(->south\()/i' => '->getPosition()->asVector3()$1',
-    '/(->west\()/i' => '->getPosition()->asVector3()$1',
-    '/(->ceil\()/i' => '->getPosition()->asVector3()$1',
-    '/(->cross\()/i' => '->getPosition()->asVector3()$1',
-    '/(->getSide\()/i' => '->getPosition()->asVector3()$1',
-    '/(->divide\()/i' => '->getPosition()->asVector3()$1',
-    '/(->dot\()/i' => '->getPosition()->asVector3()$1',
-    '/(->round\()/i' => '->getPosition()->asVector3()$1',
-    '/(->length\()/i' => '->getPosition()->asVector3()$1',
-    '/(->x\()/i' => '->getPosition()->asVector3()$1',
-    '/(->y\()/i' => '->getPosition()->asVector3()$1',
-    '/(->z\()/i' => '->getPosition()->asVector3()$1',
-    '/(->add\()/i' => '->getPosition()->asVector3()$1',
-    '/(->multiply\()/i' => '->getPosition()->asVector3()$1',
-    '/(->maxPlainDistance\()/i' => '->getPosition()->asVector3()$1',
-    '/(->distanceSquared\()/i' => '->getPosition()->asVector3()$1',
-    '/(->getIntermediateWithXValue\()/i' => '->getPosition()->asVector3()$1',
-    '/(->getIntermediateWithYValue\()/i' => '->getPosition()->asVector3()$1',
-    '/(->getIntermediateWithZValue\()/i' => '->getPosition()->asVector3()$1',
-    '/(->lengthSquared\()/i' => '->getPosition()->asVector3()$1',
+    '/(->getX\()/i' => '->getPosition()->getX()',
+    '/(->getY\()/i' => '->getPosition()->getY()',
+    '/(->getZ\()/i' => '->getPosition()->getZ()',
+    '/(->getFloorX\()/i' => '->getPosition()$1',
+    '/(->getFloorY\()/i' => '->getPosition()$1',
+    '/(->getFloorZ\()/i' => '->getPosition()$1',
+    '/(->distance\()/i' => '->getPosition()$1',
+    '/(->floor\()/i' => '->getPosition()$1',
+    '/(->subtract\()/i' => '->getPosition()$1',
+    '/(->up\()/i' => '->getPosition()$1',
+    '/(->down\()/i' => '->getPosition()$1',
+    '/(->abs\()/i' => '->getPosition()$1',
+    '/(->east\()/i' => '->getPosition()$1',
+    '/(->north\()/i' => '->getPosition()$1',
+    '/(->south\()/i' => '->getPosition()$1',
+    '/(->west\()/i' => '->getPosition()$1',
+    '/(->ceil\()/i' => '->getPosition()$1',
+    '/(->cross\()/i' => '->getPosition()$1',
+    '/(->getSide\()/i' => '->getPosition()$1',
+    '/(->divide\()/i' => '->getPosition()$1',
+    '/(->dot\()/i' => '->getPosition()$1',
+    '/(->round\()/i' => '->getPosition()$1',
+    '/(->length\()/i' => '->getPosition()$1',
+    '/(->x\()/i' => '->getPosition()$1',
+    '/(->y\()/i' => '->getPosition()$1',
+    '/(->z\()/i' => '->getPosition()$1',
+    '/(->add\()/i' => '->getPosition()$1',
+    '/(->multiply\()/i' => '->getPosition()$1',
+    '/(->maxPlainDistance\()/i' => '->getPosition()$1',
+    '/(->distanceSquared\()/i' => '->getPosition()$1',
+    '/(->getIntermediateWithXValue\()/i' => '->getPosition()$1',
+    '/(->getIntermediateWithYValue\()/i' => '->getPosition()$1',
+    '/(->getIntermediateWithZValue\()/i' => '->getPosition()$1',
+    '/(->lengthSquared\()/i' => '->getPosition()$1',
+    '/(DestroyBlockParticle\/i' => 'BlockBreakParticle',
     '/(->removeEffect\()/i' => '->getEffects()->remove(',
     '/(->getEffect\()/i' => '->getEffects()->get(',
     '/(->hasEffect\()/i' => '->getEffects()->has(',
@@ -183,9 +176,7 @@ const REMAPS = [
 
 const DANGEROUS_CODES = [
 
-    '/getFloorX\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-    '/getFloorY\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
-    '/getFloorZ\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
+
     '/getYaw\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
     '/getPitch\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
     '/getGamemode\(/' => 'Player GameMode was made a class instead of an int',
@@ -193,7 +184,27 @@ const DANGEROUS_CODES = [
     '/add\(([^,\)]*(?:,)?){1,2}\)/i' => 'Additions to vectors require 3 arguments', // they are not actively changed since
     '/subtract\(([^,\)]*(?:,)?){1,2}\)/i' => 'Subtractions of vectors require 3 arguments',
     '/PlayerInteractEvent::(RIGHT|LEFT)_CLICK_AIR/' => 'Air clicks have been removed from interaction types',
+    '/RemoteConsoleCommandSender' => 'class was removed',
+    '/EntityArmorChangeEvent' => 'class was removed ',
+    '/InventoryPickupArrowEvent' => 'class was removed ,use EntityItemPickupEvent instead',
+    '/InventoryPickupItemEvent' => 'class was removed,use EntityItemPickupEvent instead ',
+    '/PlayerCheatEvent' => 'class was removed',
+    '/PlayerIllegalMoveEvent' => 'class was removed',
+    '/NetworkInterfaceCrashEvent' => 'class was removed,use EntityTeleportEvent instead ',
+    '/EntityLevelChangeEvent' => 'class was removed',
+    '/CustomInventory' => 'class was removed',
+    '/InventoryEventProcessor' => 'class was removed',
+    '/->reload()' => 'class was removed',
+    '/->addPlayer' => 'class was removed',
+    '/->enablePlugin' => 'class was removed',
+    '/->disablePlugin()' => 'class was removed',
+    '/Recipe' => 'class was removed',
+    '/ItemFactory::fromString()' => 'class was removed',
+    '/Potion::getPotionEffectsById()' => 'class was removed',
+    '/transaction\CreativeInventoryAction' => 'class was removed',
     '/\$(e|ev|event)->setCancelled\(/' => 'Events are now cancelled with cancel() / uncancel() - Could not be replaced automatically'
+
+
 ];
 
 $pluginFolder = load_plugin_folder($argv);
