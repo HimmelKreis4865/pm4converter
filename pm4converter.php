@@ -39,7 +39,7 @@ const IMPORT_REMAPS = [
     'pocketmine\level\Level' => 'pocketmine\world\World',
     'pocketmine\level' => 'pocketmine\world',
     'pocketmine\command\PluginIdentifiableCommand' => 'pocketmine\plugin\PluginOwned',
-    'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\Particle\BlockBreakParticle',
+    'pocketmine\world\particle\DestroyBlockParticle' => 'pocketmine\world\particle\BlockBreakParticle',
     'pocketmine\event\level' => 'pocketmine\event\world',
 
 
