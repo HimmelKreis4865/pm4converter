@@ -3,5 +3,9 @@ This script tries to convert pm3 plugins to pm4 as good as possible, but sadly n
 Please open issues if you find any unexpected behaviour, to help improving this script.
 
 ## How to use
-Download and run this script. The first parameter you specify will be the path to the plugin folder you want to convert (make sure to enter the path to the folder `plugin.yml` and `src` are in!)
-The script will generate a folder `output/<plugin_name>` with the converted plugin. The old one will remain unchanged.
+ - Download the project and extract `pm4converter.php`
+ - Move the file (`pm4converter.php`) to another directory, or leave it where it is right now
+ - Select a plugin: it MUST be a folder plugin, the directory selected must contain `src` and `plugin.yml`. Copy it.
+ - Paste it next to the previously extracted `pm4converter.php`
+ - Now run the command: `php pm4converter.php <DIRECTORY_NAME>`, replace `<DIRECTORY_NAME>` with the name of the directory you pasted. If PHP is not set inside of the environment variables, you might have to enter the full path to php's binary, `php.exe` on Windows and `php` on Linux
+ - The converted plugin will be stored in the same directory under `output/<DIRECTORY_NAME>`
