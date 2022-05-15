@@ -125,7 +125,8 @@ const REMAPS = [
 	'/BaseLang/' => 'Language', // can we really convert this that easy?
 	'/([\({,\s\.])Generator::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
 	'/([\({,\s\.])GeneratorManager::(.*)/' => '$1\pocketmine\world\generator\GeneratorManager::getInstance()->$2',
-	'/DestroyBlockParticle/' => 'BlockBreakParticle'
+	'/DestroyBlockParticle/' => 'BlockBreakParticle',
+	'/(Entity|\\\pocketmine\\\entity\\\Entity)::registerEntity\((([^,]+)::class),*([^,]*),*(.*)\)/i' => '\\pocketmine\\entity\\EntityFactory::getInstance()->register($2, fn($world, $nbt) => new $3(\\pocketmine\\entity\\EntityDataHelper::parseLocation($nbt, $world), $nbt))'
 ];
 const DANGEROUS_CODES = [
 	'/getYaw\(/' => 'Position based functions have been removed from player, entity and block and can be accessed via getPosition() / getLocation()',
